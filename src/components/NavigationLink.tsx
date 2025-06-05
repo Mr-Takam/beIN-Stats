@@ -4,7 +4,7 @@ import {
 } from "react-router-dom";
 import Link, { LinkProps } from "@mui/material/Link";
 
-export default function NetflixNavigationLink({
+export default function AppNavigationLink({
   sx,
   children,
   ...others
@@ -13,7 +13,15 @@ export default function NetflixNavigationLink({
     <Link
       {...others}
       component={RouterLink}
-      sx={{ color: "text.primary", textDecoration: "none", ...sx }}
+      sx={{
+        color: "text.primary",
+        textDecoration: "none",
+        "&:hover": {
+          color: "secondary.main",
+          textDecoration: "underline",
+        },
+        ...sx,
+      }}
     >
       {children}
     </Link>

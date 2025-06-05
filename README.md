@@ -1,18 +1,18 @@
-# DevSecOps Project: Netflix Clone Deployment with CI/CD Pipeline
+# DevSecOps Project: FootStream Deployment with CI/CD Pipeline
 
 ## Workflow Diagram of my Project -
-![netflix-workflow](https://github.com/mdazfar2/DevSecOps-CICD-Pipeline-NetflixClone/assets/100375390/1b8b47f4-47f6-4990-b349-8b0639507947)
+![footstream-workflow](https://github.com/mdazfar2/DevSecOps-CICD-Pipeline-NetflixClone/assets/100375390/1b8b47f4-47f6-4990-b349-8b0639507947)
 
 
 # Description 
-Welcome to my DevSecOps project where I deploy a Netflix clone application using modern DevOps practices and tools. In this project, I leverage Jenkins for Continuous Integration and Continuous Deployment (CI/CD), Docker for containerization, and integrating different tools with each other, Kubernetes for orchestration, and monitoring tools like Grafana, Prometheus, and Node Exporter for observability.
+Welcome to my DevSecOps project where I deploy a FootStream application using modern DevOps practices and tools. In this project, I leverage Jenkins for Continuous Integration and Continuous Deployment (CI/CD), Docker for containerization, and integrating different tools with each other, Kubernetes for orchestration, and monitoring tools like Grafana, Prometheus, and Node Exporter for observability.
 
 ## Project Overview
-This project aims to demonstrate a complete DevSecOps workflow for deploying a Netflix clone application. The workflow includes:
+This project aims to demonstrate a complete DevSecOps workflow for deploying a FootStream application. The workflow includes:
 
-- **Continuous Integration/Continuous Deployment (CI/CD)**: Using Jenkins, we automate the build, test, and deployment process of our Netflix clone application. Jenkins will pull code from our version control system, run tests, build Docker images, and deploy to Kubernetes.
+- **Continuous Integration/Continuous Deployment (CI/CD)**: Using Jenkins, we automate the build, test, and deployment process of our FootStream application. Jenkins will pull code from our version control system, run tests, build Docker images, and deploy to Kubernetes.
 
-- **Containerization with Docker**: We containerize our Netflix clone application using Docker. This enables consistency in deployment across different environments and simplifies dependencies.
+- **Containerization with Docker**: We containerize our FootStream application using Docker. This enables consistency in deployment across different environments and simplifies dependencies.
 
 - **Orchestration with Kubernetes:** Our application will be deployed and managed on a Kubernetes cluster. Kubernetes helps in scaling, load balancing, and maintaining high availability of our application.
 
@@ -22,7 +22,7 @@ This project aims to demonstrate a complete DevSecOps workflow for deploying a N
 
 - **Jenkins:** Automates the CI/CD pipeline and orchestrates the deployment process.
 
-- **Docker**: Enables containerization of our Netflix clone application.
+- **Docker**: Enables containerization of our FootStream application.
 
 - **SonarQube**: continuous inspection of code quality and security vulnerabilities in software development projects.
 
@@ -154,14 +154,14 @@ After running this script, use your `<EC2-instance-IP:8080>` and access it via t
         }
         stage('Checkout from Git'){
             steps{
-                git branch: 'main', url: 'https://github.com/mdazfar2/DevSecOps-CICD-Pipeline-NetflixClone.git'
+                git branch: 'main', url: 'https://github.com/mdazfar2/DevSecOps-CICD-Pipeline-FootStream.git'
             }
         }
         stage("Sonarqube Analysis "){
             steps{
                 withSonarQubeEnv('sonar-server') {
-                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Netflix \
-                    -Dsonar.projectKey=Netflix '''
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=FootStream \
+                    -Dsonar.projectKey=FootStream '''
                 }
             }
         }
@@ -192,21 +192,21 @@ After running this script, use your `<EC2-instance-IP:8080>` and access it via t
             steps{
                 script{
                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
-                       sh "docker build --build-arg TMDB_V3_API_KEY=ca86fe14eca3e76864bc17f59d319b92 -t netflix ."
-                       sh "docker tag netflix azfaralam440/netflix:latest "
-                       sh "docker push azfaralam440/netflix:latest "
+                       sh "docker build --build-arg TMDB_V3_API_KEY=ca86fe14eca3e76864bc17f59d319b92 -t footstream ."
+                       sh "docker tag footstream azfaralam440/footstream:latest "
+                       sh "docker push azfaralam440/footstream:latest "
                     }
                 }
             }
         }
         stage("TRIVY"){
             steps{
-                sh "trivy image azfaralam440/netflix:latest > trivyimage.txt"
+                sh "trivy image azfaralam440/footstream:latest > trivyimage.txt"
             }
         }
         stage('Deploy to container'){
             steps{
-                sh 'docker run -d --name netflix -p 8081:80 azfaralam440/netflix:latest'
+                sh 'docker run -d --name footstream -p 8081:80 azfaralam440/footstream:latest'
             }
         }
     }
@@ -226,23 +226,23 @@ After running this script, use your `<EC2-instance-IP:8080>` and access it via t
 ```
 
 - According to your changes, update your Docker Hub email, Sonar token, and everything in the pipeline; do not simply copy the same as before.
-- After completing this, check your Grafana to review your Jenkins aborted jobs and other details. Then access your `Netflix-EC2-public-IP with port 8081` to view the Netflix deployment. Remember to use your own TMDB API key in Docker build and push Stages in Pipeline.
+- After completing this, check your Grafana to review your Jenkins aborted jobs and other details. Then access your `FootStream-EC2-public-IP with port 8081` to view the FootStream deployment. Remember to use your own TMDB API key in Docker build and push Stages in Pipeline.
 
 <img src="https://www.animatedimages.org/data/media/562/animated-line-image-0184.gif" width="1920" />
 
 # Conclusion
-This project demonstrates the power of DevSecOps in deploying a modern application like a Netflix clone. By automating the build, test, and deployment processes and incorporating monitoring tools, we ensure a robust and scalable deployment pipeline. I hope you find this project useful and insightful!
+This project demonstrates the power of DevSecOps in deploying a modern application like a FootStream. By automating the build, test, and deployment processes and incorporating monitoring tools, we ensure a robust and scalable deployment pipeline. I hope you find this project useful and insightful!
 
 
 <img src="https://www.animatedimages.org/data/media/562/animated-line-image-0184.gif" width="1920" />
 
 ---
 
-***Now, from here, you can visit [my medium blog](https://medium.com/@azfaralam/netflix-clone-ci-cd-with-monitoring-jenkins-docker-kubernetes-monitoring-devsecops-6430fbd5f867), where you will find everything explained from scratch, with screenshots for every step, uploaded from the beginning to the end. So once visit on [DevSecOps-Netflix Blog for every steps](https://medium.com/@azfaralam/netflix-clone-ci-cd-with-monitoring-jenkins-docker-kubernetes-monitoring-devsecops-6430fbd5f867).***
+***Now, from here, you can visit [my medium blog](https://medium.com/@azfaralam/footstream-ci-cd-with-monitoring-jenkins-docker-kubernetes-monitoring-devsecops-6430fbd5f867), where you will find everything explained from scratch, with screenshots for every step, uploaded from the beginning to the end. So once visit on [DevSecOps-FootStream Blog for every steps](https://medium.com/@azfaralam/footstream-ci-cd-with-monitoring-jenkins-docker-kubernetes-monitoring-devsecops-6430fbd5f867).***
 
 ---
 
-***That’s all from my side. If you encounter any issues while working on this project, feel free to connect with me via-***
+***That's all from my side. If you encounter any issues while working on this project, feel free to connect with me via-***
 
 - [LinkedIN](https://linkedin.com/in/md-azfar-alam)
 - [Discord](https://discordapp.com/users/877531143610708028)

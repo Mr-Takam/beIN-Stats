@@ -1,39 +1,36 @@
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
+// import Divider from "@mui/material/Divider"; // No longer needed
 
 export default function Footer() {
   return (
     <Box
+      component="footer"
       sx={{
-        position: "absolute",
-        bottom: 0,
-        left: 0,
-        right: 0,
         display: "flex",
         flexDirection: "column",
+        alignItems: "center", // Center horizontally
         justifyContent: "center",
-        height: 150,
-        bgcolor: "inherit",
+        py: 3, // Add vertical padding
+        mt: 5, // Add margin top to separate from content
+        bgcolor: "background.paper", // Use paper color from theme
+        color: "text.secondary", // Use secondary text color for copyright/info
         px: "60px",
       }}
     >
-      <Box>
-        <Divider>
-          <Typography color="grey.700" variant="h6">
-            Developed by{" "}
-            <Link
-              href="https://github.com/crazy-man22"
-              underline="none"
-              sx={{ color: "text.primary" }}
-              target="_blank"
-            >
-              Crazy Man
-            </Link>
-          </Typography>
-        </Divider>
-      </Box>
+      <Typography variant="body2" align="center">
+        {'Développé par '}
+        <Link
+          href="https://github.com/Mr-Takam"
+          underline="hover"
+          color="inherit"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Mr-Takam
+        </Link>{' © '}{new Date().getFullYear()}
+      </Typography>
     </Box>
   );
 }

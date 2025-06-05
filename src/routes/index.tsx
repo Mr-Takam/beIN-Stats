@@ -17,18 +17,31 @@ const router = createBrowserRouter([
         lazy: () => import("src/pages/HomePage"),
       },
       {
-        path: MAIN_PATH.genreExplore,
-        children: [
-          {
-            path: ":genreId",
-            lazy: () => import("src/pages/GenreExplore"),
-          },
-        ],
+        path: "competitions/:competitionId/standings",
+        lazy: () => import("src/pages/CompetitionStandingsPage"),
       },
       {
-        path: MAIN_PATH.watch,
-        lazy: () => import("src/pages/WatchPage"),
+        path: "competitions/:competitionId/teams",
+        lazy: () => import("src/pages/CompetitionTeamsPage"),
       },
+      {
+        path: "competitions/:competitionId/matches",
+        lazy: () => import("src/pages/CompetitionMatchesPage"),
+      },
+      // Routes précédemment liées aux films/séries supprimées
+      // {
+      //   path: MAIN_PATH.genreExplore,
+      //   children: [
+      //     {
+      //       path: ":genreId",
+      //       lazy: () => import("src/pages/GenreExplore"),
+      //     },
+      //   ],
+      // },
+      // {
+      //   path: MAIN_PATH.watch,
+      //   lazy: () => import("src/pages/WatchPage"),
+      // },
     ],
   },
 ]);

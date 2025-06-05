@@ -15,14 +15,14 @@ pipeline{
         }
         stage('Checkout from Git'){
             steps{
-                git branch: 'main', url: 'https://github.com/mdazfar2/DevSecOps-CICD-Pipeline-NetflixClone.git'
+                git branch: 'main', url: 'https://github.com/mdazfar2/DevSecOps-CICD-Pipeline-FootStream.git'
             }
         }
         stage("Sonarqube Analysis "){
             steps{
                 withSonarQubeEnv('sonar-server') {
-                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Netflix \
-                    -Dsonar.projectKey=Netflix '''
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=FootStream \
+                    -Dsonar.projectKey=FootStream '''
                 }
             }
         }
@@ -53,21 +53,21 @@ pipeline{
             steps{
                 script{
                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
-                       sh "docker build --build-arg TMDB_V3_API_KEY=ca86fe14eca3e76864bc17f59d319b92 -t netflix ."
-                       sh "docker tag netflix azfaralam440/netflix:latest "
-                       sh "docker push azfaralam440/netflix:latest "
+                       sh "docker build --build-arg TMDB_V3_API_KEY=ca86fe14eca3e76864bc17f59d319b92 -t footstream ."
+                       sh "docker tag footstream azfaralam440/footstream:latest "
+                       sh "docker push azfaralam440/footstream:latest "
                     }
                 }
             }
         }
         stage("TRIVY"){
             steps{
-                sh "trivy image azfaralam440/netflix:latest > trivyimage.txt"
+                sh "trivy image azfaralam440/footstream:latest > trivyimage.txt"
             }
         }
         stage('Deploy to container'){
             steps{
-                sh 'docker run -d --name netflix -p 8081:80 azfaralam440/netflix:latest'
+                sh 'docker run -d --name footstream -p 8081:80 azfaralam440/footstream:latest'
             }
         }
     }

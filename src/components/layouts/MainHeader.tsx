@@ -11,12 +11,17 @@ import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import useOffSetTop from "src/hooks/useOffSetTop";
-import { APP_BAR_HEIGHT } from "src/constant";
+import { APP_BAR_HEIGHT, MAIN_PATH } from "src/constant";
 import Logo from "../Logo";
 import SearchBox from "../SearchBox";
-import NetflixNavigationLink from "../NetflixNavigationLink";
+import AppNavigationLink from "../NavigationLink";
 
-const pages = ["My List", "Movies", "Tv Shows"];
+const pages = [
+  { name: "Upcoming Matches", path: MAIN_PATH.browse },
+  { name: "Leagues", path: MAIN_PATH.browse },
+  { name: "Teams", path: MAIN_PATH.browse }, // Placeholder
+  { name: "Highlights", path: MAIN_PATH.browse }, // Placeholder
+];
 
 const MainHeader = () => {
   const isOffset = useOffSetTop(APP_BAR_HEIGHT);
@@ -46,16 +51,11 @@ const MainHeader = () => {
   return (
     <AppBar
       sx={{
-        // px: "4%",
         px: "60px",
         height: APP_BAR_HEIGHT,
         backgroundImage: "none",
-        ...(isOffset
-          ? {
-              bgcolor: "primary.main",
-              boxShadow: (theme) => theme.shadows[4],
-            }
-          : { boxShadow: 0, bgcolor: "transparent" }),
+        bgcolor: "background.paper",
+        boxShadow: (theme) => isOffset ? theme.shadows[4] : 'none',
       }}
     >
       <Toolbar disableGutters>
@@ -91,27 +91,26 @@ const MainHeader = () => {
             }}
           >
             {pages.map((page) => (
-              <MenuItem key={page} onClick={handleCloseNavMenu}>
-                <Typography textAlign="center">{page}</Typography>
+              <MenuItem key={page.name} onClick={handleCloseNavMenu}>
+                <Typography textAlign="center">{page.name}</Typography>
               </MenuItem>
             ))}
           </Menu>
         </Box>
         <Typography
-          variant="h5"
+          variant="h6"
           noWrap
-          component="a"
-          href=""
+          component={AppNavigationLink}
+          to={MAIN_PATH.root}
           sx={{
             mr: 2,
             display: { xs: "flex", md: "none" },
             flexGrow: 1,
             fontWeight: 700,
-            color: "inherit",
             textDecoration: "none",
           }}
         >
-          Netflix
+          FootStream
         </Typography>
         <Stack
           direction="row"
@@ -119,14 +118,14 @@ const MainHeader = () => {
           sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
         >
           {pages.map((page) => (
-            <NetflixNavigationLink
-              to=""
+            <AppNavigationLink
+              to={page.path}
               variant="subtitle1"
-              key={page}
+              key={page.name}
               onClick={handleCloseNavMenu}
             >
-              {page}
-            </NetflixNavigationLink>
+              {page.name}
+            </AppNavigationLink>
           ))}
         </Stack>
 

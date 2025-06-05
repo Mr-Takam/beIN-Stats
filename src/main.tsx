@@ -5,15 +5,12 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { RouterProvider } from "react-router-dom";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 
 import store from "./store";
-import { extendedApi } from "./store/slices/configuration";
-import palette from "./theme/palette";
+import theme from "./theme";
 import router from "./routes";
 import MainLoadingScreen from "./components/MainLoadingScreen";
-
-store.dispatch(extendedApi.endpoints.getConfiguration.initiate(undefined));
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -21,7 +18,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <Provider store={store}>
     <React.StrictMode>
-      <ThemeProvider theme={createTheme({ palette })}>
+      <ThemeProvider theme={theme}>
         <RouterProvider
           router={router}
           fallbackElement={<MainLoadingScreen />}
