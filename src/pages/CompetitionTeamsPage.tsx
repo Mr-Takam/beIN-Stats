@@ -4,9 +4,8 @@ import { Typography, Box, Grid, Card, CardContent, Stack, Chip, Divider, Paper }
 
 export function Component() {
   const { competitionId } = useParams<{ competitionId: string }>();
-  const id = parseInt(competitionId as string, 10);
 
-  const { data: teamsData, isLoading, isError } = useGetTeamsByCompetitionIdQuery(id, { skip: !id });
+  const { data: teamsData, isLoading, isError } = useGetTeamsByCompetitionIdQuery(competitionId as string, { skip: !competitionId });
 
   if (isLoading) {
     return (

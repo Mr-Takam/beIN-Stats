@@ -1,29 +1,26 @@
 import { Box, Typography, Stack, Card, CardContent, Grid, Paper, Chip, Divider, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
-import { useGetAllTeamsQuery, useGetCompetitionsQuery, useGetTeamsByCompetitionIdQuery } from "src/store/slices/apiSlice";
-import { useState, useEffect } from "react";
+import { useGetCompetitionsQuery, useGetTeamsByCompetitionIdQuery } from "src/store/slices/apiSlice";
+import { useState } from "react";
 import { useSearchParams } from 'react-router-dom';
 
 export function Component() {
   const [searchParams] = useSearchParams();
   const teamId = searchParams.get('teamId');
 
-  const { data: allTeamsData, isLoading: isLoadingAllTeams, error: allTeamsError } = useGetAllTeamsQuery();
   const { data: competitionsData, isLoading: isLoadingCompetitions, error: competitionsError } = useGetCompetitionsQuery();
   const [selectedCompetition, setSelectedCompetition] = useState<string>('');
 
   // Fetch teams by competition only when a competition is selected
-  const { data: competitionTeamsData, isLoading: isLoadingCompetitionTeams, error: competitionTeamsError } = useGetTeamsByCompetitionIdQuery(parseInt(selectedCompetition), { skip: !selectedCompetition });
+  const { data: competitionTeamsData, isLoading: isLoadingCompetitionTeams, error: competitionTeamsError } = useGetTeamsByCompetitionIdQuery(selectedCompetition, { skip: !selectedCompetition });
 
   // Combine loading and error states
-  const isLoading = isLoadingAllTeams || isLoadingCompetitions || isLoadingCompetitionTeams;
-  const error = allTeamsError || competitionsError || competitionTeamsError;
+  const isLoading = isLoadingCompetitions || isLoadingCompetitionTeams;
+  const error = competitionsError || competitionTeamsError;
 
   // Si un teamId est présent dans l'URL, filtrer les équipes
-  const teamsToDisplay = teamId && allTeamsData?.teams 
-    ? allTeamsData.teams.filter((team: any) => team.id.toString() === teamId)
-    : selectedCompetition 
-      ? competitionTeamsData?.teams || []
-      : allTeamsData?.teams || [];
+  const teamsToDisplay = teamId && competitionTeamsData?.teams 
+    ? competitionTeamsData.teams.filter((team: any) => team.id.toString() === teamId)
+    : competitionTeamsData?.teams || [];
 
   if (isLoading) {
     return (
@@ -41,7 +38,6 @@ export function Component() {
     );
   }
 
-  const allTeams = allTeamsData?.teams || [];
   const competitions = competitionsData?.competitions || [];
 
   return (
@@ -58,7 +54,7 @@ export function Component() {
             onChange={(e) => setSelectedCompetition(e.target.value)}
           >
             <MenuItem value="">
-              <em>Toutes les compétitions</em>
+              <em>Choisissez une compétition</em>
             </MenuItem>
             {competitions.map((competition: any) => (
               <MenuItem key={competition.id} value={competition.id}>
@@ -69,7 +65,11 @@ export function Component() {
         </FormControl>
       </Box>
 
-      {!teamsToDisplay || teamsToDisplay.length === 0 ? (
+      {!selectedCompetition ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+          <Typography variant="h6">Veuillez sélectionner une compétition pour afficher les équipes.</Typography>
+        </Box>
+      ) : teamsToDisplay.length === 0 ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
           <Typography variant="h6">Aucune équipe trouvée pour cette compétition.</Typography>
         </Box>
@@ -89,56 +89,53 @@ export function Component() {
               >
                 <Card>
                   <CardContent>
-                    <Stack spacing={2} alignItems="center">
-                      <Box
-                        component="img"
-                        src={team.crest}
-                        alt={team.name}
-                        sx={{ 
-                          width: 80, 
-                          height: 80, 
-                          objectFit: 'contain',
-                          filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.2))'
-                        }}
+                    <Box
+                      component="img"
+                      src={team.crest}
+                      alt={team.name}
+                      sx={{ 
+                        width: 80, 
+                        height: 80, 
+                        objectFit: 'contain',
+                        filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.2))'
+                      }}
+                    />
+                    <Divider sx={{ width: '100%' }} />
+                    <Typography variant="h6" align="center" sx={{ fontWeight: 'bold' }}>
+                      {team.name}
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
+                      <Chip 
+                        label={team.tla} 
+                        size="small" 
+                        sx={{ backgroundColor: 'primary.light', color: 'white' }} 
                       />
-                      <Divider sx={{ width: '100%' }} />
-                      <Typography variant="h6" align="center" sx={{ fontWeight: 'bold' }}>
-                        {team.name}
-                      </Typography>
-                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
+                      {team.venue && (
                         <Chip 
-                          label={team.tla} 
+                          label={team.venue} 
                           size="small" 
-                          sx={{ backgroundColor: 'primary.light', color: 'white' }} 
+                          variant="outlined" 
                         />
-                        {team.venue && (
+                      )}
+                    </Box>
+                    {team.address && (
+                      <Typography variant="caption" color="text.secondary" align="center">
+                        {team.address}
+                      </Typography>
+                    )}
+                    {team.runningCompetitions && (
+                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
+                        {team.runningCompetitions.map((comp: any) => (
                           <Chip 
-                            label={team.venue} 
+                            key={comp.id}
+                            label={comp.name} 
                             size="small" 
-                            variant="outlined" 
+                            variant="outlined"
+                            color="primary"
                           />
-                        )}
+                        ))}
                       </Box>
-                      {team.address && (
-                        <Typography variant="caption" color="text.secondary" align="center">
-                          {team.address}
-                        </Typography>
-                      )}
-                      {/* Display running competitions only if available in the data */}
-                      {team.runningCompetitions && team.runningCompetitions.length > 0 && (
-                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
-                          {team.runningCompetitions.map((comp: any) => (
-                            <Chip 
-                              key={comp.id}
-                              label={comp.name} 
-                              size="small" 
-                              variant="outlined"
-                              color="primary"
-                            />
-                          ))}
-                        </Box>
-                      )}
-                    </Stack>
+                    )}
                   </CardContent>
                 </Card>
               </Paper>

@@ -30,7 +30,7 @@ const SearchIconWrapper = styled("div")(({ theme }) => ({
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: theme.palette.text.primary,
-  "& .NetflixInputBase-input": {
+  "& .beINInputBase-input": {
     width: 0,
     transition: theme.transitions.create("width", {
       duration: theme.transitions.duration.complex,

@@ -1,5 +1,5 @@
 {
-  "name": "devops-netflix-clone",
+  "name": "beIN-stats",
   "version": "0.1.1",
   "type": "module",
   "private": true,
@@ -15,7 +15,10 @@
     "@mui/material": "^5.10.0",
     "@reduxjs/toolkit": "^1.8.3",
     "date-fns": "^4.1.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
     "framer-motion": "^7.1.0",
+    "node-fetch": "^3.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.2",
@@ -28,10 +31,11 @@
   },
   "devDependencies": {
     "@types/react": "^18.0.24",
-    "@types/react-dom": "^18.0.8",
+    "@types/react-dom": "^18.3.7",
     "@types/react-slick": "^0.23.10",
+    "@types/use-sync-external-store": "^1.5.0",
     "@vitejs/plugin-react": "^2.2.0",
-    "typescript": "^4.6.4",
+    "typescript": "^4.9.5",
     "vite": "^3.2.2"
   }
 }

@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      args:
+        - NODE_ENV=production
+    image: beinstates-app:latest
+    container_name: beinstates-app
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - VITE_APP_FOOTBALL_API_KEY=${VITE_APP_FOOTBALL_API_KEY}
+    networks:
+      - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=80"
+      - "prometheus.io/path=/metrics"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: beinstates-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: beinstates-grafana
+    restart: unless-stopped
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
+    ports:
+      - "3000:3000"
+    networks:
+      - monitoring
+    depends_on:
+      - prometheus
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  monitoring:
+    name: beinstates-monitoring
+    driver: bridge
+
+volumes:
+  prometheus_data:
+    name: beinstates-prometheus-data
+  grafana_data:
+    name: beinstates-grafana-data 

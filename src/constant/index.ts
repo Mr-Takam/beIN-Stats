@@ -1,4 +1,4 @@
-import { CustomGenre } from "src/types/Genre";
+import { CustomGenre } from "../types/Genre";
 
 export const API_ENDPOINT_URL = import.meta.env.VITE_APP_API_ENDPOINT_URL;
 export const TMDB_V3_API_KEY = import.meta.env.VITE_APP_TMDB_V3_API_KEY;
