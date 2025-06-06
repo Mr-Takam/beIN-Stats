@@ -13,6 +13,7 @@ services:
       - "8080:80"
     environment:
       - VITE_APP_FOOTBALL_API_KEY=${VITE_APP_FOOTBALL_API_KEY}
+      - VITE_APP_API_ENDPOINT_URL=${VITE_APP_API_ENDPOINT_URL:-https://api.football-data.org/v4/}
     networks:
       - monitoring
     labels:
@@ -21,6 +22,27 @@ services:
       - "prometheus.io/path=/metrics"
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  proxy:
+    build:
+      context: .
+      dockerfile: proxy/Dockerfile
+    container_name: beinstates-proxy
+    restart: unless-stopped
+    ports:
+      - "3005:3005"
+    environment:
+      - VITE_APP_FOOTBALL_API_KEY=${VITE_APP_FOOTBALL_API_KEY}
+      - VITE_APP_API_ENDPOINT_URL=${VITE_APP_API_ENDPOINT_URL:-https://api.football-data.org/v4/}
+      - PROXY_PORT=3005
+    networks:
+      - monitoring
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3005/api/competitions"]
       interval: 30s
       timeout: 10s
       retries: 3
