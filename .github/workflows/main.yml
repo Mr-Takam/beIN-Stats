@@ -53,12 +53,12 @@ jobs:
       run: npm run build
       
     - name: Build Docker image
-      run: docker build -t bein-states-proxy:${{ github.sha }} .
+      run: docker build -t beinstates-app:${{ github.sha }} .
       
     - name: Scan Docker image
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: 'bein-states-proxy:${{ github.sha }}'
+        image-ref: 'beinstates-app:${{ github.sha }}'
         format: 'table'
         exit-code: '1'
         ignore-unfixed: true
@@ -73,8 +73,8 @@ jobs:
         
     - name: Push Docker image
       run: |
-        docker tag bein-states-proxy:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/bein-states-proxy:latest
-        docker push ${{ secrets.DOCKERHUB_USERNAME }}/bein-states-proxy:latest
+        docker tag beinstates-app:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/beinstates-app:latest
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/beinstates-app:latest
 
   deploy:
     needs: build-and-test
