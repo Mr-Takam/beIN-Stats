@@ -55,6 +55,7 @@ services:
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
+      - //./pipe/docker_engine://./pipe/docker_engine
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -97,6 +98,17 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    ports:
+      - "9113:9113"
+    command:
+      - '-nginx.scrape-uri=http://app:80/status'
+    depends_on:
+      - app
+    networks:
+      - monitoring
 
 networks:
   monitoring:

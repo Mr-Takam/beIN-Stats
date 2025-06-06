@@ -7,7 +7,11 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  - job_name: 'beinstates'
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+
+  - job_name: 'beinstates-docker'
     docker_sd_configs:
       - host: npipe:////./pipe/docker_engine
         filters:
