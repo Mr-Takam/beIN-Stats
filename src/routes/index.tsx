@@ -17,16 +17,33 @@ const router = createBrowserRouter([
         lazy: () => import("src/pages/HomePage"),
       },
       {
-        path: "competitions/:competitionId/standings",
-        lazy: () => import("src/pages/CompetitionStandingsPage"),
+        path: "competitions",
+        lazy: () => import("src/pages/CompetitionsPage"),
       },
       {
-        path: "competitions/:competitionId/teams",
-        lazy: () => import("src/pages/CompetitionTeamsPage"),
+        path: "competitions/:competitionId",
+        children: [
+          {
+            path: "standings",
+            lazy: () => import("src/pages/CompetitionStandingsPage"),
+          },
+          {
+            path: "teams",
+            lazy: () => import("src/pages/CompetitionTeamsPage"),
+          },
+          {
+            path: "matches",
+            lazy: () => import("src/pages/CompetitionMatchesPage"),
+          },
+        ],
       },
       {
-        path: "competitions/:competitionId/matches",
-        lazy: () => import("src/pages/CompetitionMatchesPage"),
+        path: "matches",
+        lazy: () => import("src/pages/MatchesPage"),
+      },
+      {
+        path: "teams",
+        lazy: () => import("src/pages/TeamsPage"),
       },
       // Routes précédemment liées aux films/séries supprimées
       // {

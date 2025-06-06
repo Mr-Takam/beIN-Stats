@@ -1,6 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useGetMatchesByCompetitionIdQuery } from "../store/slices/apiSlice";
-import { Typography, Container, Box, List, ListItem, ListItemText } from "@mui/material";
+import { Typography, Box, Grid, Card, CardContent, Stack, Chip, Divider, Paper } from "@mui/material";
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 export function Component() {
   const { competitionId } = useParams<{ competitionId: string }>();
@@ -9,34 +11,131 @@ export function Component() {
   const { data: matchesData, isLoading, isError } = useGetMatchesByCompetitionIdQuery(id, { skip: !id });
 
   if (isLoading) {
-    return <Typography>Chargement des matchs...</Typography>;
+    return (
+      <Box sx={{ p: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+        <Typography variant="h6">Chargement des matchs...</Typography>
+      </Box>
+    );
   }
 
   if (isError) {
-    return <Typography color="error">Erreur lors du chargement des matchs.</Typography>;
+    return (
+      <Box sx={{ p: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+        <Typography variant="h6" color="error">Erreur lors du chargement des matchs.</Typography>
+      </Box>
+    );
   }
 
-  // Supposons que l'API retourne les matchs dans un tableau 'matches'
-  const matches = matchesData?.matches;
+  const matches = matchesData?.matches || [];
 
   if (!matches || matches.length === 0) {
-    return <Typography>Aucun match trouvé pour cette compétition.</Typography>;
+    return (
+      <Box sx={{ p: 3 }}>
+        <Typography variant="h6">Aucun match trouvé pour cette compétition.</Typography>
+      </Box>
+    );
   }
 
+  const getStatusChip = (status: string) => {
+    switch (status) {
+      case 'LIVE':
+        return <Chip label="EN DIRECT" color="error" size="small" />;
+      case 'FINISHED':
+        return <Chip label="TERMINÉ" color="success" size="small" />;
+      case 'SCHEDULED':
+        return <Chip label="PROGRAMMÉ" color="primary" size="small" />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <Container sx={{ pt: "150px" }}>
-      <Typography variant="h4" gutterBottom>Matchs - {matchesData?.competition?.name || 'Compétition'}</Typography>
-      <List>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" sx={{ mb: 4, fontWeight: 'bold' }}>
+        Matchs - {matchesData?.competition?.name || 'Compétition'}
+      </Typography>
+      <Grid container spacing={3}>
         {matches.map((match: any) => (
-          <ListItem key={match.id} sx={{ borderBottom: '1px dashed #555' }}>
-            <ListItemText
-              primary={`${match.homeTeam.name} vs ${match.awayTeam.name}`}
-              secondary={`Date: ${new Date(match.utcDate).toLocaleString()} - Status: ${match.status}`}
-            />
-          </ListItem>
+          <Grid item xs={12} sm={6} md={4} key={match.id}>
+            <Paper 
+              elevation={3}
+              sx={{ 
+                transition: 'transform 0.2s',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: 6
+                }
+              }}
+            >
+              <Card>
+                <CardContent>
+                  <Stack spacing={2}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        {format(new Date(match.utcDate), "dd/MM/yyyy HH:mm", { locale: fr })}
+                      </Typography>
+                      {getStatusChip(match.status)}
+                    </Box>
+                    
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
+                        {match.homeTeam.crest && (
+                          <Box
+                            component="img"
+                            src={match.homeTeam.crest}
+                            alt={match.homeTeam.name}
+                            sx={{ width: 40, height: 40, objectFit: 'contain' }}
+                          />
+                        )}
+                        <Typography variant="body1" noWrap>{match.homeTeam.name}</Typography>
+                      </Box>
+
+                      <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        mx: 2,
+                        minWidth: '60px',
+                        justifyContent: 'center'
+                      }}>
+                        {match.score && match.score.fullTime ? (
+                          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                            {match.score.fullTime.home} - {match.score.fullTime.away}
+                          </Typography>
+                        ) : (
+                          <Typography variant="body2" color="text.secondary">
+                            VS
+                          </Typography>
+                        )}
+                      </Box>
+
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-end' }}>
+                        <Typography variant="body1" noWrap>{match.awayTeam.name}</Typography>
+                        {match.awayTeam.crest && (
+                          <Box
+                            component="img"
+                            src={match.awayTeam.crest}
+                            alt={match.awayTeam.name}
+                            sx={{ width: 40, height: 40, objectFit: 'contain' }}
+                          />
+                        )}
+                      </Box>
+                    </Box>
+
+                    <Divider />
+                    
+                    {match.status === 'LIVE' && (
+                      <Typography variant="caption" color="error" sx={{ fontWeight: 'bold' }}>
+                        {match.minute}' minute
+                      </Typography>
+                    )}
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Paper>
+          </Grid>
         ))}
-      </List>
-    </Container>
+      </Grid>
+    </Box>
   );
 }
 

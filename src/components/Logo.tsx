@@ -12,6 +12,11 @@ export default function Logo({ sx }: BoxProps) {
         width={120}
         height={35}
         sx={{
+          filter: 'brightness(1.1) contrast(1.1)',
+          transition: 'filter 0.3s ease',
+          '&:hover': {
+            filter: 'brightness(1.2) contrast(1.2)',
+          },
           ...sx,
         }}
       />

@@ -17,10 +17,10 @@ import SearchBox from "../SearchBox";
 import AppNavigationLink from "../NavigationLink";
 
 const pages = [
-  { name: "Upcoming Matches", path: MAIN_PATH.browse },
-  { name: "Leagues", path: MAIN_PATH.browse },
-  { name: "Teams", path: MAIN_PATH.browse }, // Placeholder
-  { name: "Highlights", path: MAIN_PATH.browse }, // Placeholder
+  { name: "Accueil", path: MAIN_PATH.browse },
+  { name: "Compétitions", path: "competitions" },
+  { name: "Matchs", path: "matches" },
+  { name: "Équipes", path: "teams" },
 ];
 
 const MainHeader = () => {
@@ -92,7 +92,9 @@ const MainHeader = () => {
           >
             {pages.map((page) => (
               <MenuItem key={page.name} onClick={handleCloseNavMenu}>
-                <Typography textAlign="center">{page.name}</Typography>
+                <AppNavigationLink to={page.path}>
+                  <Typography textAlign="center">{page.name}</Typography>
+                </AppNavigationLink>
               </MenuItem>
             ))}
           </Menu>
