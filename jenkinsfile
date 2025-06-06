@@ -76,6 +76,34 @@ pipeline{
                 }
             }
         }
+        stage('Performance Tests') {
+            steps {
+                script {
+                    sh 'docker-compose up -d'
+                    sleep(time: 60, unit: 'SECONDS')
+                    sh 'docker-compose run --rm k6 run /scripts/load-test.js'
+                }
+            }
+            post {
+                always {
+                    sh 'docker-compose down'
+                }
+            }
+        }
+        stage('Stress Tests') {
+            steps {
+                script {
+                    sh 'docker-compose up -d'
+                    sleep(time: 60, unit: 'SECONDS')
+                    sh 'docker-compose run --rm k6 run /scripts/stress-test.js'
+                }
+            }
+            post {
+                always {
+                    sh 'docker-compose down'
+                }
+            }
+        }
     }
     post {
      always {

@@ -2,17 +2,13 @@ version: '3.8'
 
 services:
   app:
-    build:
-      context: .
-      args:
-        - NODE_ENV=production
-    image: beinstates-app:latest
+    image: mrtakam/beinstates-app:latest
     container_name: beinstates-app
     restart: unless-stopped
     ports:
       - "8080:80"
     environment:
-      - VITE_APP_FOOTBALL_API_KEY=${VITE_APP_FOOTBALL_API_KEY}
+      - VITE_APP_FOOTBALL_API_KEY=${VITE_APP_FOOTBALL_API_KEY:-votre_cle_api}
       - VITE_APP_API_ENDPOINT_URL=${VITE_APP_API_ENDPOINT_URL:-https://api.football-data.org/v4/}
     networks:
       - monitoring
@@ -110,6 +106,29 @@ services:
     networks:
       - monitoring
 
+  k6:
+    image: grafana/k6:latest
+    container_name: beinstates-k6
+    volumes:
+      - ./k6:/scripts
+    environment:
+      - K6_OUT=influxdb=http://influxdb:8086/k6
+    networks:
+      - monitoring
+    depends_on:
+      - app
+      - proxy
+
+  influxdb:
+    image: influxdb:1.8
+    container_name: beinstates-influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+    networks:
+      - monitoring
+
 networks:
   monitoring:
     name: beinstates-monitoring
@@ -119,4 +138,6 @@ volumes:
   prometheus_data:
     name: beinstates-prometheus-data
   grafana_data:
-    name: beinstates-grafana-data 
+    name: beinstates-grafana-data
+  influxdb_data:
+    name: beinstates-influxdb-data 

@@ -14,11 +14,9 @@ COPY dist ./
 # Copie de la config nginx
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-# Création du script de démarrage
-RUN echo '#!/bin/sh\n\
-envsubst "\${VITE_APP_API_ENDPOINT_URL} \${VITE_APP_FOOTBALL_API_KEY}" < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf\n\
-nginx -g "daemon off;"' > /docker-entrypoint.sh && \
-chmod +x /docker-entrypoint.sh
+# Copie du script d'entrée
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 EXPOSE 80
 
